@@ -1,17 +1,24 @@
 services:
   db:
-    image: postgis/postgis:17-3.7
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+
     environment:
       POSTGRES_DB: terralert
       POSTGRES_USER: terralert
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+
     ports:
       - "127.0.0.1:5432:5432"
+
     volumes:
       - pgdata:/var/lib/postgresql/data
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U terralert -d terralert"]
       interval: 5s
+      timeout: 5s
       retries: 10
+
 volumes:
   pgdata:
