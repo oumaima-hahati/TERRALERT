@@ -44,3 +44,5 @@ Thumbs.db
 
 # Downloaded NASA FIRMS datasets
 /data/wildfires/nrt/*.csv
+# Open-Meteo generated forecasts
+/data/weather/forecasts/*.json
