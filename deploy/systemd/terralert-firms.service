@@ -1,0 +1,8 @@
+[Unit]
+Description=TERRALERT NASA FIRMS Detection Checker
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Desktop/TERRALERT
+EnvironmentFile=%h/.config/terralert/firms.env
+ExecStart=/usr/bin/python3 %h/Desktop/TERRALERT/scripts/check_new_firms.py
