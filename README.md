@@ -2,9 +2,13 @@
 
 **AI-Powered Multi-Hazard Risk Assessment and Early-Warning Platform**
 
-TERRALERT is a geospatial platform designed to support natural hazard risk assessment and, eventually, predictive early warnings in 11 communes of the Tangier–Assilah area, Morocco.
+TERRALERT is a geospatial platform designed to support natural hazard risk assessment and, eventually, predictive early warnings in Tangier, Morocco.
 
 The project combines Geographic Information Systems (GIS), remote sensing, meteorological data, and machine learning.
+
+- [Data gap analysis](analysis/DATA_GAP_ANALYSIS.md)
+- [Data collection priorities](analysis/DATA_COLLECTION_PRIORITIES.md)
+- [CHIRPS rainfall pipeline and validation status](gis/chirps/README.md)
 
 ## 1. Technologies
 
