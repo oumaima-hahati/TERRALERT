@@ -37,3 +37,10 @@ venv/
 Thumbs.db
 *.log
 .ipynb_checkpoints/
+# NASA FIRMS credentials
+.env
+.env.*
+!.env.example
+
+# Downloaded NASA FIRMS datasets
+/data/wildfires/nrt/*.csv
