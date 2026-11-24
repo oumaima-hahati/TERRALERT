@@ -8,13 +8,11 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
-
 # Secrets and local configuration
 .env
 .env.*
 !.env.example
 *.pem
-
 # GIS and remote sensing data
 *.tif
 *.tiff
@@ -25,30 +23,29 @@ venv/
 *.hdf
 *.h5
 *.nc
-
 # ML models
 *.pkl
 *.joblib
 *.pt
 *.pth
-
 # Temporary files
 .DS_Store
 Thumbs.db
 *.log
 .ipynb_checkpoints/
-<<<<<<< HEAD
 # NASA FIRMS credentials
-.env
-.env.*
-!.env.example
-
 # Downloaded NASA FIRMS datasets
 /data/wildfires/nrt/*.csv
 # Open-Meteo generated forecasts
 /data/weather/forecasts/*.json
-=======
-
 # Local CHIRPS acquisition runs
 /data/chirps/
->>>>>>> 190b29d (feat: add resumable CHIRPS rainfall validation for Tangier)
+
+# Official PostGIS source datasets
+!database/postgis/data/communes_26191.gpkg
+!database/postgis/data/rivers_11_communes.gpkg
+!database/postgis/data/commune_indicators_landcover.gpkg
+
+# Local backups
+*.backup
+*.before_rivers

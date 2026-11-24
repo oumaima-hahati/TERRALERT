@@ -87,12 +87,14 @@ def get_rivers():
                             json_agg(
                                 json_build_object(
                                     'type', 'Feature',
-                                    'geometry', ST_AsGeoJSON(geom)::json,
+                                    'geometry', ST_AsGeoJSON(ST_Transform(geom, 4326))::json,
                                     'properties', json_build_object(
                                         'fid', fid,
-                                        'length_km', length_km,
-                                        'dis_av_cms', dis_av_cms,
-                                        'ord_stra', ord_stra
+                                        'length_km', ROUND((ST_Length(geom) / 1000)::numeric, 3),
+                                        'osm_id', osm_id,
+                                        'name', name,
+                                        'fclass', fclass,
+                                        'stream_type', stream_type
                                     )
                                 )
                                 ORDER BY fid
@@ -111,4 +113,43 @@ def get_rivers():
         raise HTTPException(
             status_code=503,
             detail="Unable to retrieve river data"
+        )
+
+
+@app.get("/api/flood/indicators")
+def flood_indicators():
+    try:
+        with psycopg.connect(
+            os.environ["DATABASE_URL"],
+            connect_timeout=5
+        ) as con:
+            with con.cursor() as cur:
+                cur.execute("""
+                    SELECT json_build_object(
+                        'type', 'FeatureCollection',
+                        'features', COALESCE(
+                            json_agg(
+                                json_build_object(
+                                    'type', 'Feature',
+                                    'geometry', ST_AsGeoJSON(
+                                        ST_Transform(geom, 4326)
+                                    )::json,
+                                    'properties', to_jsonb(f) - 'geom'
+                                )
+                                ORDER BY commune_name
+                            ),
+                            '[]'::json
+                        )
+                    )
+                    FROM public.flood_commune_indicators f;
+                """)
+                result = cur.fetchone()[0]
+
+        return JSONResponse(content=result)
+
+    except Exception as exc:
+        print(f"Flood indicators error: {exc}")
+        raise HTTPException(
+            status_code=503,
+            detail="Unable to retrieve flood indicators"
         )
