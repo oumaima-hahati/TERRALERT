@@ -153,3 +153,8 @@ def flood_indicators():
             status_code=503,
             detail="Unable to retrieve flood indicators"
         )
+
+
+# Weather and multi-hazard endpoints
+from .hazard_routes import router as hazard_router
+app.include_router(hazard_router)
