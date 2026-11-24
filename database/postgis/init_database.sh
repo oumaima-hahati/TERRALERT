@@ -177,4 +177,8 @@ UNION ALL
 SELECT 'flood_indicators', COUNT(*) FROM flood_commune_indicators;
 SQL
 
+echo "Applying weather and hazard database migration..."
+
+sql < database/postgis/migrations/001_weather_hazards.sql
+
 echo "TERRALERT database initialized successfully."

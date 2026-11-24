@@ -94,3 +94,58 @@ before attempting another import.
 
 The flood indicators represent territorial characteristics,
 not validated flood-risk predictions.
+
+## Weather and multi-hazard schema
+
+The integrated initializer now automatically applies:
+
+    migrations/001_weather_hazards.sql
+
+This migration creates five additional tables:
+
+| Table | Purpose |
+|---|---|
+| weather_daily | Historical weather observations |
+| weather_forecasts | Weather forecast snapshots |
+| fire_detections | Satellite thermal detections |
+| hazard_assessments | Scientific model results |
+| hazard_alerts | Hazard alert history |
+
+For existing compatible databases, apply only the migration
+from the repository root:
+
+    docker compose exec -T db psql \
+      -U terralert -d terralert \
+      -v ON_ERROR_STOP=1 \
+      < database/postgis/migrations/001_weather_hazards.sql
+
+Do not rerun the full GIS initializer on an existing database.
+
+GIS initialization and the hazard migration use separate
+transactions. If the migration fails after GIS initialization,
+inspect the error and apply the migration separately.
+
+### Validation performed on 2026-11-24
+
+- Complete initialization tested on terralert_init_test.
+- Migration reapplication successful.
+- Operational database record counts preserved.
+- 11 communes, 123 rivers and 11 flood indicator records.
+- All five new tables created successfully.
+- 47 runtime API checks passed.
+- 5 operational database isolation checks passed.
+- 8 reusable API smoke-test methods passed.
+
+### Backend documentation and tests
+
+See backend/README.md for endpoint documentation,
+integration requirements and current limitations.
+
+With the API running, execute from the repository root:
+
+    python3 backend/tests/api_smoke.py
+
+The schema supports scientific model integration but does
+not itself calculate or validate hazard probabilities.
+
+Automatic PostGIS ingestion remains pending.
