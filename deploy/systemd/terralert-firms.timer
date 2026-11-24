@@ -1,0 +1,10 @@
+[Unit]
+Description=Check NASA FIRMS every 6 hours
+
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:00:00
+Persistent=true
+Unit=terralert-firms.service
+
+[Install]
+WantedBy=timers.target

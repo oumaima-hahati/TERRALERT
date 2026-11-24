@@ -37,6 +37,7 @@ venv/
 Thumbs.db
 *.log
 .ipynb_checkpoints/
+<<<<<<< HEAD
 # NASA FIRMS credentials
 .env
 .env.*
@@ -44,3 +45,10 @@ Thumbs.db
 
 # Downloaded NASA FIRMS datasets
 /data/wildfires/nrt/*.csv
+# Open-Meteo generated forecasts
+/data/weather/forecasts/*.json
+=======
+
+# Local CHIRPS acquisition runs
+/data/chirps/
+>>>>>>> 190b29d (feat: add resumable CHIRPS rainfall validation for Tangier)
