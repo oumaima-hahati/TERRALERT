@@ -1,0 +1,7 @@
+[Unit]
+Description=Record TERRALERT forecast failure
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Desktop/TERRALERT
+ExecStart=%h/Desktop/TERRALERT/.venv/bin/python %h/Desktop/TERRALERT/scripts/notify_forecast_failure.py
