@@ -46,6 +46,12 @@ steps = [
         "data/wildfires/gis",
         "wildfire_forecast_*.gpkg",
     ),
+    (
+        "Calculate 24h/72h rainfall forecasts",
+        "scripts/calculate_rainfall_forecasts.py",
+        "data/weather/forecasts/aggregated",
+        "rainfall_weather_24h_72h_*.csv",
+    ),
 ]
 
 completed = []
@@ -64,7 +70,7 @@ def run_step(number, name, script, folder, pattern, env_overrides=None):
     directory = ROOT / folder
     before = set(directory.glob(pattern)) if directory.exists() else set()
 
-    log(f"\n[{number}/4] {name}")
+    log(f"\n[{number}/{len(steps)}] {name}")
 
     environment = os.environ.copy()
     environment.update(env_overrides or {})
@@ -129,6 +135,11 @@ try:
                 paths[2].resolve()
             )
 
+        elif index == 5:
+            environment["TERRALERT_HOURLY_FORECAST_FILE"] = str(
+                paths[0].resolve()
+            )
+
         paths.append(run_step(
             index, *step, env_overrides=environment
         ))
@@ -152,6 +163,46 @@ try:
                 raise RuntimeError(
                     "GIS output does not match current FWI run"
                 )
+
+    rainfall_csv = paths[4]
+
+    expected_rainfall_name = (
+        "rainfall_weather_24h_72h_"
+        + paths[0].stem.removeprefix("forecast_")
+        + ".csv"
+    )
+
+    if rainfall_csv.name != expected_rainfall_name:
+        raise RuntimeError(
+            "Rainfall output does not match current forecast"
+        )
+
+    with rainfall_csv.open(
+        encoding="utf-8", newline=""
+    ) as f:
+        rainfall_records = list(csv.DictReader(f))
+
+    rainfall_keys = {
+        (r["commune"], int(r["horizon_hours"]))
+        for r in rainfall_records
+    }
+
+    if not (
+        len(rainfall_records) == 22
+        and len(rainfall_keys) == 22
+        and len({c for c, _ in rainfall_keys}) == 11
+        and {h for _, h in rainfall_keys} == {24, 72}
+        and all(
+            int(r["hours_available"]) == int(r["horizon_hours"])
+            and r["status"] == "PROVISIONAL_RESEARCH"
+            and math.isfinite(float(r["rainfall_total_mm"]))
+            and float(r["rainfall_total_mm"]) >= 0
+            for r in rainfall_records
+        )
+    ):
+        raise ValueError(
+            "Rainfall forecast validation failed"
+        )
 
     forecast_csv = paths[2]
 
