@@ -114,6 +114,27 @@ def search(question, top_k=3):
         heading_terms = set(tokenize(document["section"]))
         score += 0.5 * len(query_terms & heading_terms)
 
+        # Prefer methodological explanations for "how" questions.
+        explanatory_terms = {
+            "how", "detected", "detect", "detection",
+            "calculated", "calculate", "defined",
+            "comment", "detecte", "calcul", "methode",
+        }
+
+        normalized_question = set(tokenize(question))
+        asks_for_method = (
+            bool(normalized_question & explanatory_terms)
+            or question.lower().startswith("how ")
+        )
+
+        section_name = document["section"].lower()
+
+        if asks_for_method and any(
+            term in section_name
+            for term in ("methodology", "method", "méthod")
+        ):
+            score += 20.0
+
         if score > 0:
             scored.append((score, document))
 

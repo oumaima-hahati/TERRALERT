@@ -1,6 +1,8 @@
 """Optional local LLM generation with a safe retrieval fallback."""
 
 import json
+
+from .hosted_llm import generate_hosted, HostedLLMError
 import os
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -28,6 +30,19 @@ def generate(question, evidence):
     }
 
     if os.getenv("TERRALERT_LLM_ENABLED") != "1":
+        return fallback
+
+    provider = os.getenv(
+        "TERRALERT_LLM_PROVIDER", "ollama"
+    ).strip().lower()
+
+    if provider == "hosted":
+        try:
+            return generate_hosted(question, evidence)
+        except HostedLLMError:
+            return fallback
+
+    if provider != "ollama":
         return fallback
 
     model = os.getenv("TERRALERT_LLM_MODEL", "").strip()
