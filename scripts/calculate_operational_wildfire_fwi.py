@@ -2,6 +2,7 @@
 """Calculate provisional FWI using recent and forecast weather."""
 
 import csv
+import os
 import subprocess
 import sys
 from collections import Counter
@@ -16,7 +17,15 @@ files = sorted(WEATHER_DIR.glob("fwi_weather_*.csv"))
 if not files:
     raise SystemExit("No operational FWI weather file found.")
 
-source_weather = files[-1]
+selected = os.environ.get("TERRALERT_FWI_WEATHER_FILE")
+source_weather = Path(selected) if selected else files[-1]
+
+if (
+    not source_weather.is_file()
+    or source_weather.resolve().parent != WEATHER_DIR.resolve()
+    or not source_weather.name.startswith("fwi_weather_")
+):
+    raise ValueError("Invalid operational FWI input file")
 run_id = source_weather.stem.replace("fwi_weather_", "")
 
 base_script = Path("scripts/calculate_wildfire_fwi.py")

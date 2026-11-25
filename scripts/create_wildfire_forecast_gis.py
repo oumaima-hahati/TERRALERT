@@ -19,7 +19,15 @@ files = sorted(FORECAST_DIR.glob("fwi_forecast_*.csv"))
 if not files:
     raise SystemExit("No FWI forecast CSV found.")
 
-forecast_file = files[-1]
+selected = os.environ.get("TERRALERT_FWI_FORECAST_FILE")
+forecast_file = Path(selected) if selected else files[-1]
+
+if (
+    not forecast_file.is_file()
+    or forecast_file.resolve().parent != FORECAST_DIR.resolve()
+    or not forecast_file.name.startswith("fwi_forecast_")
+):
+    raise ValueError("Invalid wildfire forecast input file")
 run_id = forecast_file.stem.replace("fwi_forecast_", "")
 output = OUTPUT_DIR / f"wildfire_forecast_{run_id}.gpkg"
 temporary = OUTPUT_DIR / f".wildfire_forecast_{run_id}.tmp.gpkg"

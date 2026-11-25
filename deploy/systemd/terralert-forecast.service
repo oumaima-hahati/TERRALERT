@@ -1,0 +1,9 @@
+[Unit]
+Description=TERRALERT provisional wildfire forecast pipeline
+OnFailure=terralert-forecast-failure.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Desktop/TERRALERT
+ExecStart=/usr/bin/flock -n %h/Desktop/TERRALERT/logs/forecast/.run.lock %h/Desktop/TERRALERT/.venv/bin/python %h/Desktop/TERRALERT/scripts/run_automated_forecast.py
+TimeoutStartSec=3600
