@@ -7,6 +7,8 @@ from pathlib import Path
 import joblib
 import numpy as np
 
+from weather_anomaly.versioning import verify_manifest
+
 from weather_anomaly.features import (
     FEATURES,
     load_weather,
@@ -47,6 +49,10 @@ def predict(start_year=2024, end_year=2025):
 
     if metadata["features"] != FEATURES:
         raise ValueError("Model feature configuration mismatch")
+
+    manifest_path = LOCAL / "model_manifest.json"
+    if manifest_path.exists():
+        verify_manifest(manifest_path)
 
     model = joblib.load(MODEL_PATH)
     threshold = float(metadata["anomaly_threshold"])
