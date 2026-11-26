@@ -1,0 +1,126 @@
+{
+  "project": "TERRALERT",
+  "validation": "Weather, Heatwave & Cold-Wave QA",
+  "period": "2001\u20132025",
+  "total_checks": 23,
+  "passed": 23,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "11 study areas",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "100441 weather records",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "No duplicate commune-dates",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Weather period 2001\u20132025",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "No missing meteorological values",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Temperature ordering",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Humidity within 0\u2013100%",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Nonnegative wind and precipitation",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Wind conversion m/s \u2192 km/h",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Heatwave: expected event count",
+      "passed": true,
+      "details": "1025 events"
+    },
+    {
+      "check": "Heatwave: unique event IDs",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Heatwave: minimum 3-day duration",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Heatwave: continuous event dates",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Heatwave: event-day totals",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Heatwave: event counts match summary",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Heatwave: all study areas represented",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Cold-wave: expected event count",
+      "passed": true,
+      "details": "1200 events"
+    },
+    {
+      "check": "Cold-wave: unique event IDs",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Cold-wave: minimum 3-day duration",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Cold-wave: continuous event dates",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Cold-wave: event-day totals",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Cold-wave: event counts match summary",
+      "passed": true,
+      "details": ""
+    },
+    {
+      "check": "Cold-wave: all study areas represented",
+      "passed": true,
+      "details": ""
+    }
+  ],
+  "scope": "Internal structural QA; not independent scientific validation"
+}
