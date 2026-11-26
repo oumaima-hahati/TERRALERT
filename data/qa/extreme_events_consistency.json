@@ -1,0 +1,57 @@
+{
+  "checks": {
+    "heatwave": {
+      "thresholds_match": true,
+      "daily_classifications_match": true,
+      "event_boundaries_match": true,
+      "events": 1025
+    },
+    "coldwave": {
+      "thresholds_match": true,
+      "daily_classifications_match": true,
+      "event_boundaries_match": true,
+      "events": 1200
+    }
+  },
+  "identical_series_groups": {
+    "heatwave": [
+      [
+        "Al Manzla",
+        "Bni Makada",
+        "Dar Chaoui",
+        "Hjar Ennhal",
+        "Laaouama",
+        "Sebt Azzinate"
+      ],
+      [
+        "Aquouass Briech",
+        "Gueznaia"
+      ],
+      [
+        "Mghogha",
+        "M\u00e9dina",
+        "Souani"
+      ]
+    ],
+    "coldwave": [
+      [
+        "Al Manzla",
+        "Bni Makada",
+        "Dar Chaoui",
+        "Hjar Ennhal",
+        "Laaouama",
+        "Sebt Azzinate"
+      ],
+      [
+        "Aquouass Briech",
+        "Gueznaia"
+      ],
+      [
+        "Mghogha",
+        "M\u00e9dina",
+        "Souani"
+      ]
+    ]
+  },
+  "scope": "Retrospective internal scientific consistency"
+}
