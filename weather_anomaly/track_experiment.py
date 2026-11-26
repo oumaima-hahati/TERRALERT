@@ -11,6 +11,8 @@ from sklearn.ensemble import IsolationForest
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from weather_anomaly.versioning import create_manifest, save_manifest, MODEL_VERSION
+
 from weather_anomaly.features import (
     FEATURES,
     load_weather,
@@ -61,6 +63,7 @@ def main():
 
         mlflow.log_params({
             "algorithm": "IsolationForest",
+            "model_version": MODEL_VERSION,
             "n_estimators": 100,
             "max_samples": 256,
             "contamination": "auto",
@@ -143,6 +146,11 @@ def main():
             json.dumps(metadata, indent=2),
             encoding="utf-8",
         )
+
+        manifest_path = OUTPUT / "model_manifest.json"
+        save_manifest(create_manifest(model_path, metadata_path, run_id=run.info.run_id), manifest_path)
+        mlflow.set_tag("model_version", MODEL_VERSION)
+        mlflow.log_artifact(str(manifest_path), artifact_path="model")
 
         mlflow.log_artifact(
             str(model_path),
