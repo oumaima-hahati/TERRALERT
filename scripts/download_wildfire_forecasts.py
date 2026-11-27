@@ -45,6 +45,7 @@ retrieved_at = run_time.isoformat()
 
 session = requests.Session()
 records = []
+daily_records = []
 metadata = []
 
 print("=== TERRALERT FORECAST INGESTION ===", flush=True)
@@ -59,6 +60,7 @@ for index, location in enumerate(communes, 1):
             "temperature_2m,relative_humidity_2m,"
             "wind_speed_10m,precipitation"
         ),
+        "daily": "temperature_2m_max,temperature_2m_min",
         "wind_speed_unit": "kmh",
         "precipitation_unit": "mm",
         "temperature_unit": "celsius",
@@ -131,6 +133,30 @@ for index, location in enumerate(communes, 1):
 
         records.append(record)
 
+    # Dedicated UTC daily extrema from the forecast provider; do not alter hourly FWI input.
+    daily = data["daily"]
+    day_dates = daily["time"]
+    if len(day_dates) != 4 or any(len(daily[k]) != 4 for k in ("temperature_2m_max", "temperature_2m_min")):
+        raise ValueError(f"{name}: expected four daily forecast records")
+    parsed_days = [datetime.strptime(day, "%Y-%m-%d").date() for day in day_dates]
+    if len(set(parsed_days)) != 4 or any((b-a).days != 1 for a,b in zip(parsed_days, parsed_days[1:])):
+        raise ValueError(f"{name}: invalid daily sequence")
+    if parsed_days != sorted({dt.date() for dt in parsed_times}):
+        raise ValueError(f"{name}: hourly/daily date mismatch")
+    for i, day in enumerate(parsed_days):
+        tmax = daily["temperature_2m_max"][i]
+        tmin = daily["temperature_2m_min"][i]
+        if tmax is None or tmin is None:
+            raise ValueError(f"{name}: missing daily extrema on {day}")
+        tmax, tmin = float(tmax), float(tmin)
+        if not all(math.isfinite(t) and -100 <= t <= 70 for t in (tmax, tmin)) or tmin > tmax:
+            raise ValueError(f"{name}: invalid daily extrema on {day}")
+        daily_records.append({
+            "commune": name, "forecast_date_utc": day.isoformat(),
+            "temperature_max_c": tmax, "temperature_min_c": tmin,
+            "retrieved_at_utc": retrieved_at, "source": "Open-Meteo Forecast API",
+        })
+
     metadata.append({
         "commune": name,
         "latitude": params["latitude"],
@@ -154,7 +180,11 @@ keys = {
 if len(keys) != len(records):
     raise ValueError("Duplicate commune-hour records")
 
+if len(daily_records) != 11 * 4 or len({(r["commune"],r["forecast_date_utc"]) for r in daily_records}) != len(daily_records):
+    raise ValueError("Unexpected or duplicate daily forecast rows")
+
 csv_path = OUTPUT / f"forecast_{run_id}.csv"
+daily_path = OUTPUT / f"daily_forecast_{run_id}.csv"
 meta_path = OUTPUT / f"forecast_{run_id}.json"
 
 with csv_path.open("x", newline="", encoding="utf-8") as f:
@@ -162,12 +192,22 @@ with csv_path.open("x", newline="", encoding="utf-8") as f:
     writer.writeheader()
     writer.writerows(records)
 
+with daily_path.open("x", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=[
+        "commune", "forecast_date_utc", "temperature_max_c", "temperature_min_c",
+        "retrieved_at_utc", "source",
+    ])
+    writer.writeheader()
+    writer.writerows(daily_records)
+
 with meta_path.open("x", encoding="utf-8") as f:
     json.dump({
         "retrieved_at_utc": retrieved_at,
         "provider": "Open-Meteo",
         "endpoint": URL,
         "forecast_days": 4,
+        "daily_file": str(daily_path),
+        "daily_variables": ["temperature_2m_max", "temperature_2m_min"],
         "locations": metadata,
     }, f, indent=2, ensure_ascii=False)
 
@@ -176,6 +216,7 @@ print("Communes:", len(communes))
 print("Forecast hours per commune:", 96)
 print("Total records:", len(records))
 print("CSV:", csv_path)
+print("Daily CSV:", daily_path)
 print("Metadata:", meta_path)
 print("Historical data modified: NO")
 print("FWI alerts generated: NO")
